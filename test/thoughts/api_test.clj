@@ -57,21 +57,6 @@
         (is (= "Title: Test post\nDate: 2022-01-02\nTags: clojure,some other tag\n\nWrite a blog post here!"
                (slurp post-file)))))))
 
-(deftest migrate
-  (with-dirs [posts-dir]
-    (let [posts-edn (write-test-file posts-dir "posts.edn"
-                                     {:file "test.md"
-                                      :title "Test post"
-                                      :date "2022-01-02"
-                                      :tags #{"clojure"}})
-          post-file (write-test-file posts-dir "test.md"
-                                     "Write a blog post here!")
-          to-lines #(-> % str/split-lines set)]
-      (api/migrate {:posts-dir posts-dir
-                    :posts-file posts-edn})
-      (is (= (to-lines "Title: Test post\nDate: 2022-01-02\nTags: clojure\n\nWrite a blog post here!")
-             (to-lines (slurp post-file)))))))
-
 (deftest render
   (testing "happy path"
     (with-dirs [assets-dir

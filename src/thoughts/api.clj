@@ -58,12 +58,6 @@
       :default 3
       :group :post-config}
 
-     :posts-file
-     {:desc "File containing deprecated post metadata (used only for `migrate`)"
-      :ref "<file>"
-      :default "posts.edn"
-      :group :post-config}
-
      ;; Input directories
      :assets-dir
      {:desc "Directory to copy assets (images, etc.) from"
@@ -429,17 +423,12 @@
                 favicon-dir
                 favicon-out-dir
                 out-dir
-                posts-file
                 templates-dir]
          :as opts}
         (-> opts apply-default-opts lib/refresh-cache)]
     (if (empty? (:posts opts))
       (binding [*out* *err*]
-        (println
-         (if (fs/exists? posts-file)
-           (format "Run `bb migrate` to move metadata from `%s` to post files"
-                   posts-file)
-           "No posts found; run `bb new` to create one")))
+        (println "No posts found; run `bb new` to create one"))
       (do
         (lib/ensure-template opts "style.css")
         (ensure-favicon-assets opts)
@@ -510,19 +499,6 @@
     (doseq [dir [cache-dir out-dir]]
       (println "Removing dir:" dir)
       (fs/delete-tree dir))))
-
-(defn migrate
-  "Migrates from `posts.edn` to post-local metadata"
-  [opts]
-  (let [{:keys [posts-file] :as opts} (apply-default-opts opts)]
-    (if (fs/exists? posts-file)
-      (do
-        (doseq [post (->> (slurp posts-file) (format "[%s]") edn/read-string)]
-          (lib/migrate-post opts post))
-        (println "If all posts were successfully migrated, you should now delete"
-                 (str posts-file)))
-      (println (format "Posts file %s does not exist; no posts to migrate"
-                       (str posts-file))))))
 
 (defn refresh-templates
   "Updates to latest default templates"

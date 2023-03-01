@@ -299,30 +299,6 @@
            :modified-posts (modified-posts opts)
            :modified-tags (modified-tags opts))))
 
-(defn migrate-post [{:keys [default-metadata posts-dir] :as opts}
-                    {:keys [file title date tags categories legacy]}]
-  (let [post-file (fs/file posts-dir file)
-        post (load-post opts post-file)]
-    (if (every? post required-metadata)
-      (println (format "Post %s already contains metadata; skipping migration"
-                       (str file)))
-      (let [contents (slurp post-file)
-            tags (or tags categories)
-            metadata (assoc default-metadata
-                            :title title
-                            :date date
-                            :tags (str/join "," tags))
-            metadata (merge metadata
-                            (when legacy
-                              {:legacy true}))
-            metadata-str (->> metadata
-                              (map (fn [[k v]]
-                                     (format "%s: %s"
-                                             (str/capitalize (name k)) v)))
-                              (str/join "\n"))]
-        (spit post-file (format "%s\n\n%s" metadata-str contents))
-        (println "Migrated file:" (str file))))))
-
 (defn posts-by-tag [posts]
   (->> (vals posts)
        (sort-by :date)

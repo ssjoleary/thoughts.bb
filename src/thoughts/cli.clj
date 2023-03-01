@@ -118,10 +118,7 @@ Options:
                 #'api/clean]
                ["refresh-templates"
                 "Update to latest default templates; see the Templates section in README"
-                #'api/refresh-templates]
-               ["migrate"
-                "Migrate from `posts.edn` to post-local metadata"
-                #'api/migrate]])]
+                #'api/refresh-templates]])]
     (conj cmds
           {:cmds [], :fn (fn [m] (print-help global-specs cmds))})))
 
