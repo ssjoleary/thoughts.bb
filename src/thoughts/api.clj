@@ -49,7 +49,7 @@
      ;; Post config
      :default-metadata
      {:desc "Default metadata to add to posts"
-      :default {:tags ["clojure"]}
+      :default {:tags ["daily"]}
       :group :post-config}
 
      :num-index-posts
@@ -389,26 +389,9 @@
             [:-cdata @html]]])])
       xml/indent-str))
 
-(defn- clojure-post? [{:keys [tags]}]
-  (let [clojure-tags #{"clojure" "clojurescript"}
-        lowercase-tags (map str/lower-case tags)]
-    (some clojure-tags lowercase-tags)))
-
 (defn- spit-feeds [{:keys [out-dir modified-posts posts] :as opts}]
   (let [feed-file (fs/file out-dir "atom.xml")
-        clojure-feed-file (fs/file out-dir "planetclojure.xml")
-        all-posts (lib/sort-posts (vals posts))
-        clojure-posts (->> (vals posts)
-                           (filter clojure-post?)
-                           lib/sort-posts)
-        clojure-posts-modified? (->> modified-posts
-                                     (map posts)
-                                     (some clojure-post?))]
-    (if (and (not clojure-posts-modified?) (fs/exists? clojure-feed-file))
-      (println "No Clojure posts modified; skipping Clojure feed")
-      (do
-        (println "Writing Clojure feed" (str clojure-feed-file))
-        (spit clojure-feed-file (atom-feed opts clojure-posts))))
+        all-posts (lib/sort-posts (vals posts))]
     (if (and (empty? modified-posts) (fs/exists? feed-file))
       (println "No posts modified; skipping main feed")
       (do
