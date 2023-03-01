@@ -1,4 +1,4 @@
-(ns quickblog.internal
+(ns thoughts.internal
   {:no-doc true}
   (:require
    [babashka.fs :as fs]
@@ -11,7 +11,7 @@
    [selmer.parser :as selmer]))
 
 (def ^:private cache-filename "cache.edn")
-(def ^:private resource-path "quickblog")
+(def ^:private resource-path "thoughts")
 (def ^:private templates-resource-dir "templates")
 (def ^:private favicon-template "favicon.html")
 
@@ -152,8 +152,8 @@
   (if-let [missing-keys
            (seq (set/difference required-metadata
                                 (set (keys post))))]
-    {:quickblog/error (format "Skipping %s due to missing required metadata: %s"
-                              (:file post) (str/join ", " (map name missing-keys)))}
+    {:thoughts/error (format "Skipping %s due to missing required metadata: %s"
+                             (:file post) (str/join ", " (map name missing-keys)))}
     post))
 
 (defn read-cached-post [{:keys [cache-dir]} file]
@@ -187,13 +187,13 @@
                          (read-cached-post opts file)))
           validate-metadata)
       (catch Exception e
-        {:quickblog/error (format "Skipping post %s due to exception: %s"
-                                  (str file) (str e))}))))
+        {:thoughts/error (format "Skipping post %s due to exception: %s"
+                                 (str file) (str e))}))))
 
 (defn ->filename [path]
   (-> path fs/file fs/file-name))
 
-(defn has-error? [opts [_ {:keys [quickblog/error]}]]
+(defn has-error? [opts [_ {:keys [thoughts/error]}]]
   (when error
     (println error)
     true))

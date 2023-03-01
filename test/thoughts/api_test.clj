@@ -1,10 +1,10 @@
-(ns quickblog.api-test
+(ns thoughts.api-test
   (:require
    [clojure.data.xml :as xml]
    [clojure.string :as str]
    [clojure.test :refer [deftest is testing use-fixtures]]
    [babashka.fs :as fs]
-   [quickblog.api :as api])
+   [thoughts.api :as api])
   (:import (java.util UUID)))
 
 (def test-dir ".test")
@@ -17,7 +17,7 @@
 
 (defn- tmp-dir [dir-name]
   (fs/file test-dir
-           (format "quickblog-test-%s-%s" dir-name (str (UUID/randomUUID)))))
+           (format "thoughts-test-%s-%s" dir-name (str (UUID/randomUUID)))))
 
 (defmacro with-dirs
   "dirs is a seq of directory names; e.g. [cache-dir out-dir]"
@@ -140,7 +140,7 @@
       (is (str/includes? (slurp (fs/file out-dir "preview.html")) "<p>only part of full post</p>"))
       (is (str/includes? (slurp (fs/file out-dir "index.html")) "<p>always included</p>"))
       (is (not (str/includes? (slurp (fs/file out-dir "index.html")) "<p>only part of full post</p>")))))
-  
+
   (testing "multiline links"
     (with-dirs [posts-dir
                 templates-dir
@@ -169,22 +169,22 @@
                    :cache-dir cache-dir
                    :out-dir out-dir})
       (is (str/includes? (slurp (fs/file out-dir "planetclojure.xml")) "Post about ClojureScript"))))
-  
-    (testing "non-Clojure tag"
-      (with-dirs [assets-dir
-                  posts-dir
-                  templates-dir
-                  cache-dir
-                  out-dir]
-        (write-test-post posts-dir {:content "Post about Elixir"
-                                    :tags #{"elixir"}})
-        (api/render {:assets-dir assets-dir
-                     :posts-dir posts-dir
-                     :templates-dir templates-dir
-                     :cache-dir cache-dir
-                     :out-dir out-dir})
-        (is (fs/exists? (fs/file out-dir "planetclojure.xml")))
-        (is (not (str/includes? (slurp (fs/file out-dir "planetclojure.xml")) "Post about Elixir")))))
+
+  (testing "non-Clojure tag"
+    (with-dirs [assets-dir
+                posts-dir
+                templates-dir
+                cache-dir
+                out-dir]
+      (write-test-post posts-dir {:content "Post about Elixir"
+                                  :tags #{"elixir"}})
+      (api/render {:assets-dir assets-dir
+                   :posts-dir posts-dir
+                   :templates-dir templates-dir
+                   :cache-dir cache-dir
+                   :out-dir out-dir})
+      (is (fs/exists? (fs/file out-dir "planetclojure.xml")))
+      (is (not (str/includes? (slurp (fs/file out-dir "planetclojure.xml")) "Post about Elixir")))))
 
   (testing "comments"
     (with-dirs [posts-dir
@@ -201,158 +201,158 @@
 
 ;; disabled, flaky in CI, cc @jmglov
 #_(deftest caching
-  (testing "assets"
-    (with-dirs [assets-dir
-                posts-dir
-                templates-dir
-                cache-dir
-                out-dir]
-      (let [render #(api/render {:assets-dir assets-dir
-                                 :posts-dir posts-dir
-                                 :templates-dir templates-dir
-                                 :cache-dir cache-dir
-                                 :out-dir out-dir})]
-        (write-test-post posts-dir)
-        (write-test-file assets-dir "asset.txt" "something")
-        (render)
-        (let [asset-file (fs/file out-dir "assets" "asset.txt")
-              mtime (fs/last-modified-time asset-file)]
+    (testing "assets"
+      (with-dirs [assets-dir
+                  posts-dir
+                  templates-dir
+                  cache-dir
+                  out-dir]
+        (let [render #(api/render {:assets-dir assets-dir
+                                   :posts-dir posts-dir
+                                   :templates-dir templates-dir
+                                   :cache-dir cache-dir
+                                   :out-dir out-dir})]
+          (write-test-post posts-dir)
+          (write-test-file assets-dir "asset.txt" "something")
+          (render)
+          (let [asset-file (fs/file out-dir "assets" "asset.txt")
+                mtime (fs/last-modified-time asset-file)]
           ;; Shouldn't copy unmodified file
-          (render)
-          (is (= mtime (fs/last-modified-time asset-file)))
+            (render)
+            (is (= mtime (fs/last-modified-time asset-file)))
           ;; Should copy modified file
-          (write-test-file assets-dir "asset.txt" "something else")
-          (render)
-          (is (not= mtime (fs/last-modified-time asset-file)))))))
+            (write-test-file assets-dir "asset.txt" "something else")
+            (render)
+            (is (not= mtime (fs/last-modified-time asset-file)))))))
 
-  (testing "posts"
-    (with-dirs [posts-dir
-                templates-dir
-                cache-dir
-                out-dir]
-      (let [render #(api/render {:posts-dir posts-dir
-                                 :templates-dir templates-dir
-                                 :cache-dir cache-dir
-                                 :out-dir out-dir})]
-        (write-test-post posts-dir)
-        (render)
-        (let [->mtimes (fn [dir filenames]
+    (testing "posts"
+      (with-dirs [posts-dir
+                  templates-dir
+                  cache-dir
+                  out-dir]
+        (let [render #(api/render {:posts-dir posts-dir
+                                   :templates-dir templates-dir
+                                   :cache-dir cache-dir
+                                   :out-dir out-dir})]
+          (write-test-post posts-dir)
+          (render)
+          (let [->mtimes (fn [dir filenames]
+                           (->> filenames
+                                (map #(let [filename (fs/file dir %)]
+                                        [filename (fs/last-modified-time filename)]))
+                                (into {})))
+                content-cached (merge (->mtimes cache-dir ["test.md.pre-template.html"])
+                                      (->mtimes out-dir ["test.html" "index.html"
+                                                         "atom.xml" "planetclojure.xml"]))
+                metadata-cached (merge (->mtimes out-dir ["archive.html"])
+                                       (->mtimes (fs/file out-dir "tags")
+                                                 ["index.html"]))
+                clojure-metadata-cached (merge metadata-cached
+                                               (->mtimes (fs/file out-dir "tags")
+                                                         ["clojure.html"]))]
+          ;; Shouldn't rewrite anything when post unmodified
+            (render)
+            (doseq [[filename mtime] (merge content-cached clojure-metadata-cached)]
+              (is (= (map str [filename mtime])
+                     (map str [filename (fs/last-modified-time filename)]))))
+          ;; Should rewrite all but metadata-cached files when post modified
+            (write-test-post posts-dir)
+            (render)
+          ;; disabled, flaky, /cc @jmglov
+            #_(doseq [[filename mtime] content-cached]
+                (is (not= (map str [filename mtime])
+                          (map str [filename (fs/last-modified-time filename)]))))
+            (doseq [[filename mtime] clojure-metadata-cached]
+              (is (= (map str [filename mtime])
+                     (map str [filename (fs/last-modified-time filename)]))))
+          ;; Should rewrite everything when metadata modified
+            (write-test-post posts-dir {:title "Changed", :tags #{"not-clojure"}})
+            (render)
+            (doseq [[filename mtime] (merge content-cached metadata-cached)]
+              (is (not= (map str [filename mtime])
+                        (map str [filename (fs/last-modified-time filename)]))))
+            (is (fs/exists? (fs/file out-dir "tags" "not-clojure.html")))
+            (is (not (fs/exists? (fs/file out-dir "tags" "clojure.html"))))))))
+
+    (testing "feeds"
+      (with-dirs [assets-dir
+                  posts-dir
+                  templates-dir
+                  cache-dir
+                  out-dir]
+        (let [render #(api/render {:assets-dir assets-dir
+                                   :posts-dir posts-dir
+                                   :templates-dir templates-dir
+                                   :cache-dir cache-dir
+                                   :out-dir out-dir})
+              ->mtimes (fn [dir filenames]
                          (->> filenames
                               (map #(let [filename (fs/file dir %)]
                                       [filename (fs/last-modified-time filename)]))
                               (into {})))
-              content-cached (merge (->mtimes cache-dir ["test.md.pre-template.html"])
-                                    (->mtimes out-dir ["test.html" "index.html"
-                                                       "atom.xml" "planetclojure.xml"]))
-              metadata-cached (merge (->mtimes out-dir ["archive.html"])
-                                     (->mtimes (fs/file out-dir "tags")
-                                               ["index.html"]))
-              clojure-metadata-cached (merge metadata-cached
-                                             (->mtimes (fs/file out-dir "tags")
-                                                       ["clojure.html"]))]
-          ;; Shouldn't rewrite anything when post unmodified
+              elem-tagged? (fn [tag el]
+                             (let [tag (keyword (str "xmlns.http%3A%2F%2Fwww.w3.org%2F2005%2FAtom/" (name tag)))]
+                               (and (instance? clojure.data.xml.node.Element el)
+                                    (= tag (:tag el)))))
+              post-ids (fn [filename]
+                         (->> (xml/parse-str (slurp filename))
+                              :content
+                              (filter (partial elem-tagged? :entry))
+                              (mapcat (fn [el]
+                                        (->> (:content el)
+                                             (filter (partial elem-tagged? :id))
+                                             (map (comp #(str/replace % #".+/" "")
+                                                        first
+                                                        :content)))))
+                              set))]
+          (write-test-post posts-dir {:file "clojure1.md"
+                                      :tags #{"clojure" "something"}})
+          (write-test-post posts-dir {:file "clojurescript1.md"
+                                      :tags #{"clojurescript" "something-else"}})
+          (write-test-post posts-dir {:file "random1.md"
+                                      :tags #{"something-else"}})
           (render)
-          (doseq [[filename mtime] (merge content-cached clojure-metadata-cached)]
-            (is (= (map str [filename mtime])
-                   (map str [filename (fs/last-modified-time filename)]))))
-          ;; Should rewrite all but metadata-cached files when post modified
-          (write-test-post posts-dir)
-          (render)
-          ;; disabled, flaky, /cc @jmglov
-          #_(doseq [[filename mtime] content-cached]
-            (is (not= (map str [filename mtime])
-                      (map str [filename (fs/last-modified-time filename)]))))
-          (doseq [[filename mtime] clojure-metadata-cached]
-            (is (= (map str [filename mtime])
-                   (map str [filename (fs/last-modified-time filename)]))))
-          ;; Should rewrite everything when metadata modified
-          (write-test-post posts-dir {:title "Changed", :tags #{"not-clojure"}})
-          (render)
-          (doseq [[filename mtime] (merge content-cached metadata-cached)]
-            (is (not= (map str [filename mtime])
-                      (map str [filename (fs/last-modified-time filename)]))))
-          (is (fs/exists? (fs/file out-dir "tags" "not-clojure.html")))
-          (is (not (fs/exists? (fs/file out-dir "tags" "clojure.html"))))))))
-
-  (testing "feeds"
-    (with-dirs [assets-dir
-                posts-dir
-                templates-dir
-                cache-dir
-                out-dir]
-      (let [render #(api/render {:assets-dir assets-dir
-                                 :posts-dir posts-dir
-                                 :templates-dir templates-dir
-                                 :cache-dir cache-dir
-                                 :out-dir out-dir})
-            ->mtimes (fn [dir filenames]
-                       (->> filenames
-                            (map #(let [filename (fs/file dir %)]
-                                    [filename (fs/last-modified-time filename)]))
-                            (into {})))
-            elem-tagged? (fn [tag el]
-                           (let [tag (keyword (str "xmlns.http%3A%2F%2Fwww.w3.org%2F2005%2FAtom/" (name tag)))]
-                             (and (instance? clojure.data.xml.node.Element el)
-                                  (= tag (:tag el)))))
-            post-ids (fn [filename]
-                       (->> (xml/parse-str (slurp filename))
-                            :content
-                            (filter (partial elem-tagged? :entry))
-                            (mapcat (fn [el]
-                                      (->> (:content el)
-                                           (filter (partial elem-tagged? :id))
-                                           (map (comp #(str/replace % #".+/" "")
-                                                      first
-                                                      :content)))))
-                            set))]
-        (write-test-post posts-dir {:file "clojure1.md"
-                                    :tags #{"clojure" "something"}})
-        (write-test-post posts-dir {:file "clojurescript1.md"
-                                    :tags #{"clojurescript" "something-else"}})
-        (write-test-post posts-dir {:file "random1.md"
-                                    :tags #{"something-else"}})
-        (render)
-        (is (= #{"clojure1.html"
-                 "clojurescript1.html"
-                 "random1.html"}
-               (post-ids (fs/file out-dir "atom.xml"))))
-        (is (= #{"clojure1.html"
-                 "clojurescript1.html"}
-               (post-ids (fs/file out-dir "planetclojure.xml"))))
-        (write-test-post posts-dir {:file "clojure2.md"
-                                    :tags #{"clojure"}})
-        (write-test-post posts-dir {:file "random2.md"
-                                    :tags #{"something"}})
-        (let [mtimes (->mtimes out-dir ["atom.xml" "planetclojure.xml"])
-              _ (render)
-              mtimes-after (->mtimes out-dir ["atom.xml" "planetclojure.xml"])]
-          (doseq [[filename mtime] mtimes-after]
-            (is (not= [filename mtime] [filename (mtimes filename)]))))
-        (is (= #{"clojure1.html"
-                 "clojure2.html"
-                 "clojurescript1.html"
-                 "random1.html"
-                 "random2.html"}
-               (post-ids (fs/file out-dir "atom.xml"))))
-        (is (= #{"clojure1.html"
-                 "clojure2.html"
-                 "clojurescript1.html"}
-               (post-ids (fs/file out-dir "planetclojure.xml"))))
-        (let [mtimes (->mtimes out-dir ["atom.xml" "planetclojure.xml"])
-              _ (render)
-              mtimes-after (->mtimes out-dir ["atom.xml" "planetclojure.xml"])]
-          (doseq [[filename mtime] mtimes-after]
-            (is (= [filename mtime] [filename (mtimes filename)]))))
-        (is (= #{"clojure1.html"
-                 "clojure2.html"
-                 "clojurescript1.html"
-                 "random1.html"
-                 "random2.html"}
-               (post-ids (fs/file out-dir "atom.xml"))))
-        (is (= #{"clojure1.html"
-                 "clojure2.html"
-                 "clojurescript1.html"}
-               (post-ids (fs/file out-dir "planetclojure.xml"))))))))
+          (is (= #{"clojure1.html"
+                   "clojurescript1.html"
+                   "random1.html"}
+                 (post-ids (fs/file out-dir "atom.xml"))))
+          (is (= #{"clojure1.html"
+                   "clojurescript1.html"}
+                 (post-ids (fs/file out-dir "planetclojure.xml"))))
+          (write-test-post posts-dir {:file "clojure2.md"
+                                      :tags #{"clojure"}})
+          (write-test-post posts-dir {:file "random2.md"
+                                      :tags #{"something"}})
+          (let [mtimes (->mtimes out-dir ["atom.xml" "planetclojure.xml"])
+                _ (render)
+                mtimes-after (->mtimes out-dir ["atom.xml" "planetclojure.xml"])]
+            (doseq [[filename mtime] mtimes-after]
+              (is (not= [filename mtime] [filename (mtimes filename)]))))
+          (is (= #{"clojure1.html"
+                   "clojure2.html"
+                   "clojurescript1.html"
+                   "random1.html"
+                   "random2.html"}
+                 (post-ids (fs/file out-dir "atom.xml"))))
+          (is (= #{"clojure1.html"
+                   "clojure2.html"
+                   "clojurescript1.html"}
+                 (post-ids (fs/file out-dir "planetclojure.xml"))))
+          (let [mtimes (->mtimes out-dir ["atom.xml" "planetclojure.xml"])
+                _ (render)
+                mtimes-after (->mtimes out-dir ["atom.xml" "planetclojure.xml"])]
+            (doseq [[filename mtime] mtimes-after]
+              (is (= [filename mtime] [filename (mtimes filename)]))))
+          (is (= #{"clojure1.html"
+                   "clojure2.html"
+                   "clojurescript1.html"
+                   "random1.html"
+                   "random2.html"}
+                 (post-ids (fs/file out-dir "atom.xml"))))
+          (is (= #{"clojure1.html"
+                   "clojure2.html"
+                   "clojurescript1.html"}
+                 (post-ids (fs/file out-dir "planetclojure.xml"))))))))
 
 (defn- test-sharing [filename {:keys [title description image image-alt
                                       author twitter-handle]}]
@@ -380,12 +380,12 @@
               templates-dir
               cache-dir
               out-dir]
-    (let [blog-title "quickblog"
+    (let [blog-title "thoughts"
           blog-description "A blog about blogging quickly"
           blog-root "http://localhost:1888"
           blog-image "assets/blog-preview.png"
           blog-image-alt "A shimmering sunset"
-          twitter-handle "quickblogger"]
+          twitter-handle "quickthinker"]
       (write-test-file posts-dir "test.md"
                        (str "Title: Test post\n"
                             "Date: 2022-01-02\n"
@@ -413,7 +413,7 @@
                      :image "http://localhost:1888/assets/post-preview.png"
                      :image-alt "A leather-bound notebook lies open on a writing desk"
                      :author "guestblogger"
-                     :twitter-handle "quickblogger"})
+                     :twitter-handle "quickthinker"})
       (test-sharing (fs/file out-dir "index.html")
                     {:title blog-title
                      :description blog-description
@@ -446,23 +446,23 @@
 (deftest refresh-templates
   ;; This fails in CI, why? /cc @jmglov
   #_(with-dirs [templates-dir]
-    (fs/create-dirs templates-dir)
-    (let [default-templates ["base.html" "post.html" "favicon.html" "style.css"]
-          custom-templates ["template1.html" "some-file.txt"]
-          mtimes (->> (concat default-templates custom-templates)
-                      (map #(let [filename %
-                                  file (fs/file templates-dir filename)]
-                              (spit file filename)
-                              [filename (str (fs/last-modified-time file))]))
-                      (into {}))]
-      (api/refresh-templates {:templates-dir templates-dir})
-      (doseq [filename default-templates
-              :let [file (fs/file templates-dir filename)
-                    mtime (str (fs/last-modified-time file))]]
-        (is (not= [filename (mtimes filename)]
-                  [filename mtime])))
-      (doseq [filename custom-templates
-              :let [file (fs/file templates-dir filename)
-                    mtime (str (fs/last-modified-time file))]]
-        (is (= [filename (mtimes filename)]
-               [filename mtime]))))))
+      (fs/create-dirs templates-dir)
+      (let [default-templates ["base.html" "post.html" "favicon.html" "style.css"]
+            custom-templates ["template1.html" "some-file.txt"]
+            mtimes (->> (concat default-templates custom-templates)
+                        (map #(let [filename %
+                                    file (fs/file templates-dir filename)]
+                                (spit file filename)
+                                [filename (str (fs/last-modified-time file))]))
+                        (into {}))]
+        (api/refresh-templates {:templates-dir templates-dir})
+        (doseq [filename default-templates
+                :let [file (fs/file templates-dir filename)
+                      mtime (str (fs/last-modified-time file))]]
+          (is (not= [filename (mtimes filename)]
+                    [filename mtime])))
+        (doseq [filename custom-templates
+                :let [file (fs/file templates-dir filename)
+                      mtime (str (fs/last-modified-time file))]]
+          (is (= [filename (mtimes filename)]
+                 [filename mtime]))))))

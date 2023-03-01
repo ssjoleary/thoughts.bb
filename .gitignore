@@ -15,7 +15,7 @@ Gemfile.lock
 /.cache
 /.work
 /.test
-.clj-kondo/rewrite-clj
+.clj-kondo/
 .cpcache
 .shadow-cljs
 report.html
@@ -24,3 +24,6 @@ classes
 /templates/
 /posts/
 .cache
+.portal
+.github
+.lsp

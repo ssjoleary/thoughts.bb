@@ -1,21 +1,21 @@
-{:deps {io.github.borkdude/quickblog {:local/root "."}}
+{:deps {io.github.ssjoleary/thoughts.bb {:local/root "."}}
  :paths ["."]
 
- :bbin/bin {quickblog {:ns-default quickblog.api}}
+ :bbin/bin {thoughts {:ns-default thoughts.api}}
 
  :tasks
  {:requires ([babashka.fs :as fs]
-             [quickblog.cli :as cli])
+             [thoughts.cli :as cli])
   :init (do
           (def opts {:blog-title "REPL adventures"
                      :blog-description "A blog about blogging quickly"
-                     :about-link "https://github.com/borkdude/quickblog"
-                     :twitter-handle "quickblog"})
+                     :about-link "https://github.com/ssjoleary/thoughts.bb"
+                     :twitter-handle "thoughts"})
           (defn- run-command [cmd-name opts]
             (apply cli/dispatch opts cmd-name *command-line-args*)))
 
-  quickblog {:doc "Start blogging quickly! Run `bb quickblog help` for details."
-             :task (cli/dispatch opts)}
+  thoughts {:doc "Start blogging quickly! Run `bb thoughts help` for details."
+            :task (cli/dispatch opts)}
 
   new {:doc "Create new blog article"
        :task (run-command "new" opts)}
@@ -44,5 +44,4 @@
         :task (apply clojure "-M:test" *command-line-args*)}
 
   quickdoc {:doc "Re-generate API.md"
-            :task (shell "bb --config quickdoc.edn quickdoc")}
-  }}
+            :task (shell "bb --config quickdoc.edn quickdoc")}}}

@@ -1,13 +1,13 @@
-(ns quickblog.cli
+(ns thoughts.cli
   (:require [babashka.cli :as cli]
             [babashka.fs :as fs]
-            [quickblog.api :as api]
+            [thoughts.api :as api]
             [clojure.set :as set]
             [clojure.string :as str]))
 
-(def ^:private main-cmd-name "quickblog")
+(def ^:private main-cmd-name "thoughts")
 
-(def ^:private specs (get-in (meta (the-ns 'quickblog.api))
+(def ^:private specs (get-in (meta (the-ns 'thoughts.api))
                              [:org.babashka/cli :spec]))
 
 (defn- apply-defaults [default-opts spec]
@@ -134,9 +134,9 @@ Options:
                      (seq *command-line-args*)))))
 
 (defn run
-  "Meant to be called using `clj -M:quickblog`; see Quickstart > Clojure in README"
+  "Meant to be called using `clj -M:thoughts`; see Quickstart > Clojure in README"
   [default-opts]
-  ;; *command-line-args* will start with `(quickblog.cli run ...)`, so we need to
+  ;; *command-line-args* will start with `(thoughts.cli run ...)`, so we need to
   ;; get rid of the first two items to get at what we care about
   (let [args (drop 2 *command-line-args*)]
     (apply dispatch default-opts args)))

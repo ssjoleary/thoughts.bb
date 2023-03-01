@@ -1,4 +1,4 @@
-(ns quickblog.test-runner
+(ns thoughts.test-runner
   {:org.babashka/cli {:coerce {:dirs :strings
                                :nses :symbols
                                :patterns :strings

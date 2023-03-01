@@ -1,12 +1,11 @@
-(ns quickblog.api
+(ns thoughts.api
   {:org.babashka/cli
    {:spec
-    {
-     ;; Blog metadata
+    {;; Blog metadata
      :blog-title
      {:desc "Title of the blog"
       :ref "<title>"
-      :default "quickblog"
+      :default "thoughts"
       :require true
       :group :blog-metadata}
 
@@ -27,7 +26,7 @@
      :blog-root
      {:desc "Base URL of the blog"
       :ref "<url>"
-      :default "https://github.com/borkdude/quickblog"
+      :default "https://github.com/ssjoleary/thoughts"
       :require true
       :group :blog-metadata}
 
@@ -155,7 +154,6 @@
       :group :favicon}
 
      ;; Command-specific opts
-
      }}}
   (:require
    [babashka.fs :as fs]
@@ -163,7 +161,7 @@
    [clojure.edn :as edn]
    [clojure.set :as set]
    [clojure.string :as str]
-   [quickblog.internal :as lib]
+   [thoughts.internal :as lib]
    [selmer.parser :as selmer]
    [selmer.filters :as filters]))
 
@@ -193,7 +191,7 @@
        (into {})))
 
 (defn- apply-default-opts [opts]
-  (let [defaults (get-defaults (meta (the-ns 'quickblog.api)))]
+  (let [defaults (get-defaults (meta (the-ns 'thoughts.api)))]
     (-> (->> defaults
              (map (fn [[k default]] [k (if (contains? opts k) (opts k) default)]))
              (into {}))
@@ -460,7 +458,7 @@
         (lib/write-cache! opts)))
     opts))
 
-(defn quickblog
+(defn thoughts
   "Alias for `render`"
   [opts]
   (render opts))
@@ -584,9 +582,9 @@
                                      (contains? #{:remove :rename} type)
                                      (dissoc @posts-cache post-filename)
 
-                                     (:quickblog/error post)
+                                     (:thoughts/error post)
                                      (do
-                                       (println (:quickblog/error post))
+                                       (println (:thoughts/error post))
                                        (dissoc @posts-cache post-filename))
 
                                      :else

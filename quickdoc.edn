@@ -5,5 +5,5 @@
  {quickdoc {:doc "Invoke quickdoc"
             :requires ([quickdoc.api :as api])
             :task (api/quickdoc {:git/branch "main"
-                                 :github/repo "https://github.com/borkdude/quickblog"
+                                 :github/repo "https://github.com/ssjoleary/thoughts.bb"
                                  :source-paths ["src"]})}}}
