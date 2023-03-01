@@ -321,31 +321,6 @@
                                     :image-alt blog-image-alt
                                     :url (lib/blog-link opts "index.html")}})))))
 
-;;;; Generate archive page with links to all posts
-
-(defn- spit-archive [{:keys [blog-title blog-description
-                             blog-image blog-image-alt twitter-handle
-                             modified-metadata posts out-dir]
-                      :as opts}]
-  (let [out-file (fs/file out-dir "archive.html")
-        stale? (or (some not-empty (vals modified-metadata))
-                   (not (fs/exists? out-file)))]
-    (when stale?
-      (let [title (str blog-title " - Archive")
-            posts (lib/sort-posts (vals posts))]
-        (lib/write-page! opts out-file
-                         (base-html opts)
-                         {:skip-archive true
-                          :title title
-                          :body (lib/post-links "Archive" posts opts)
-                          :sharing {:description (format "Archive - %s"
-                                                         blog-description)
-                                    :author twitter-handle
-                                    :twitter-handle twitter-handle
-                                    :image (lib/blog-link opts blog-image)
-                                    :image-alt blog-image-alt
-                                    :url (lib/blog-link opts "archive.html")}})))))
-
 ;;;; Generate atom feeds
 
 (xml/alias-uri 'atom "http://www.w3.org/2005/Atom")
@@ -425,7 +400,6 @@
         (fs/create-dirs (fs/file cache-dir))
         (gen-posts opts)
         (gen-tags opts)
-        (spit-archive opts)
         (spit-index opts)
         (spit-feeds opts)
         (lib/write-cache! opts)))
