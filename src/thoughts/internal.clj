@@ -21,7 +21,7 @@
 
 (def ^:private required-metadata
   #{:date
-    :title})
+    :time})
 
 (defmacro ->map [& ks]
   (assert (every? symbol? ks))
