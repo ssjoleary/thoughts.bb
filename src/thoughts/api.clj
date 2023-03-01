@@ -151,6 +151,7 @@
      }}}
   (:require
    [babashka.fs :as fs]
+   [babashka.process :refer [shell]]
    [clojure.data.xml :as xml]
    [clojure.edn :as edn]
    [clojure.set :as set]
@@ -452,45 +453,29 @@
   [opts]
   (render opts))
 
-(defn- now []
-  (.format (java.time.LocalDate/now)
-           (java.time.format.DateTimeFormatter/ofPattern "yyyy-MM-dd")))
+(defn- now [p]
+  (let [fmt (DateTimeFormatter/ofPattern p)
+        now (java.time.ZonedDateTime/now java.time.ZoneOffset/UTC)]
+    (.format now fmt)))
 
 (defn new
   "Creates new `file` in posts dir."
-  {:org.babashka/cli
-   {:spec
-    {:file
-     {:desc "Filename of post (relative to posts-dir)"
-      :ref "<filename>"
-      :require true}
-
-     :title
-     {:desc "Title of post"
-      :ref "<title>"
-      :require true}
-
-     :tags
-     {:desc "List of tags (default: 'clojure'; example: --tags tag1 tag2 \"tag3 has spaces\")"
-      :ref "<tags>"
-      :coerce []}}}}
   [opts]
-  (let [{:keys [file title posts-dir tags default-metadata]
-         :as opts} (apply-default-opts opts)
+  (let [{:keys [posts-dir tags default-metadata]} (apply-default-opts opts)
         tags (cond (empty? tags)   (:tags default-metadata)
                    (= tags [true]) [] ;; `--tags` without arguments
-                   :else tags)]
-    (doseq [k [:file :title]]
-      (assert (contains? opts k) (format "Missing required option: %s" k)))
-    (let [file (if (re-matches #"^.+[.][^.]+$" file)
-                 file
-                 (str file ".md"))
-          post-file (fs/file posts-dir file)]
-      (when-not (fs/exists? post-file)
-        (fs/create-dirs posts-dir)
-        (spit (fs/file posts-dir file)
-              (format "Title: %s\nDate: %s\nTags: %s\n\nWrite a blog post here!"
-                      title (now) (str/join "," tags)))))))
+                   :else tags)
+        file (str (now "yyyy-MM-dd'T'HH:mm:ssxxx") ".md")
+        post-file (fs/file posts-dir file)
+        editor (or (System/getenv "EDITOR")
+                   "vi")]
+    (when-not (fs/exists? post-file)
+      (fs/create-dirs posts-dir)
+      (spit (fs/file posts-dir file)
+            (format "Date: %s\nTime: %s\nTags: %s\n\nWrite your thoughts here!"
+                    (now "yyyy-MM-dd") (now "HH:mm:ss") (str/join "," tags)))
+
+      (shell editor (str post-file)))))
 
 (defn clean
   "Removes cache and output directories"
