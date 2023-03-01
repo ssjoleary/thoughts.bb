@@ -219,37 +219,6 @@
       (lib/ensure-resource (fs/file favicon-dir asset)
                            (fs/file "assets" "favicon" asset)))))
 
-(defn- gen-posts [{:keys [deleted-posts modified-posts posts
-                          cache-dir out-dir]
-                   :as opts}]
-  (let [posts-to-write (set/union modified-posts
-                                  (lib/modified-post-pages opts))
-        page-template (base-html opts)
-        post-template (slurp (lib/ensure-template opts "post.html"))]
-    (fs/create-dirs cache-dir)
-    (fs/create-dirs out-dir)
-    (doseq [[file post] posts
-            :when (contains? posts-to-write file)
-            :let [{:keys [file date legacy]} post
-                  html-file (lib/html-file file)]]
-      (lib/write-post! (assoc opts
-                              :page-template page-template
-                              :post-template post-template)
-                       post)
-      (let [legacy-dir (fs/file out-dir (str/replace date "-" "/")
-                                (str/replace file ".md" ""))]
-        (when legacy
-          (fs/create-dirs legacy-dir)
-          (let [legacy-file  (fs/file (fs/file legacy-dir "index.html"))
-                redirect-html (selmer/render legacy-template
-                                             {:new_url html-file})]
-            (println "Writing legacy redirect:" (str legacy-file))
-            (spit legacy-file redirect-html)))))
-    (doseq [file deleted-posts]
-      (println "Post deleted; removing from cache and outdir:" (str file))
-      (fs/delete-if-exists (fs/file cache-dir (lib/cache-file file)))
-      (fs/delete-if-exists (fs/file out-dir (lib/html-file file))))))
-
 (defn- gen-tags [{:keys [blog-title blog-description
                          blog-image blog-image-alt twitter-handle
                          modified-tags posts out-dir tags-dir]
@@ -398,7 +367,6 @@
         (doseq [file (fs/glob templates-dir "*.{css,svg}")]
           (lib/copy-modified file (fs/file out-dir (.getFileName file))))
         (fs/create-dirs (fs/file cache-dir))
-        (gen-posts opts)
         (gen-tags opts)
         (spit-index opts)
         (spit-feeds opts)
