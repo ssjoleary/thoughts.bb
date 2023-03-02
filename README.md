@@ -2,9 +2,11 @@
 
 thoughts.bb is a program for making tweet-sized text posts and putting them on the internet.
 
-thoughts pages are an attempt at a quieter, slower, more personal internet. A little space on the web, just for you (and whoever you'd like to share them with).
+thoughts pages are an attempt at a quieter, slower, more personal internet. A little space
+on the web, just for you (and whoever you'd like to share them with).
 
-See [Thoughts](https://github.com/dimriver/thoughts) and [thoughts.page](https://thoughts.page/) for more info about this. I guess it's microblogging by another name?
+See [Thoughts](https://github.com/dimriver/thoughts) and [thoughts.page](https://thoughts.page/) for more info about this.
+I guess it's microblogging by another name?
 
 See [API.md](API.md) on how to use this.
 
@@ -17,6 +19,12 @@ Includes hot-reload.
 - [ssjoleary](https://tilde.club/~automaticpancake/thoughts)
 
 Feel free to PR yours.
+
+## quickblog
+
+thoughts.bb is a modification of [quickblog](https://github.com/borkdude/quickblog).
+An excellent light-weight static blog engine for Clojure and babashka. Check it out
+for your more traditional blogging needs!
 
 ## Quickstart
 
