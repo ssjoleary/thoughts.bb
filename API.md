@@ -1,109 +1,104 @@
-# quickblog.api 
-
-
-
-
+# thoughts.api
 
 ## `clean`
-``` clojure
+
+```clojure
 
 (clean opts)
 ```
 
-
 Removes cache and output directories
-<br><sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/api.clj#L493-L499)</sub>
-## `migrate`
-``` clojure
+<br><sub>[source](https://github.com/ssjoleary/thoughts.bb/blob/main/src/thoughts/api.clj#L422-L428)</sub>
 
-(migrate opts)
-```
-
-
-Migrates from `posts.edn` to post-local metadata
-<br><sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/api.clj#L501-L512)</sub>
 ## `new`
-``` clojure
+
+```clojure
 
 (new opts)
 ```
 
-
 Creates new `file` in posts dir.
-<br><sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/api.clj#L466-L491)</sub>
-## `quickblog`
-``` clojure
+<br><sub>[source](https://github.com/ssjoleary/thoughts.bb/blob/main/src/thoughts/api.clj#L403-L420)</sub>
 
-(quickblog opts)
-```
-
-
-Alias for `render`
-<br><sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/api.clj#L457-L460)</sub>
 ## `refresh-templates`
-``` clojure
+
+```clojure
 
 (refresh-templates opts)
 ```
 
-
 Updates to latest default templates
-<br><sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/api.clj#L514-L517)</sub>
+<br><sub>[source](https://github.com/ssjoleary/thoughts.bb/blob/main/src/thoughts/api.clj#L430-L433)</sub>
+
 ## `render`
-``` clojure
+
+```clojure
 
 (render opts)
 ```
 
-
 Renders posts declared in `posts.edn` to `out-dir`.
-<br><sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/api.clj#L421-L455)</sub>
+<br><sub>[source](https://github.com/ssjoleary/thoughts.bb/blob/main/src/thoughts/api.clj#L361-L391)</sub>
+
 ## `serve`
-``` clojure
+
+```clojure
 
 (serve opts)
+(serve opts block?)
 ```
 
-
 Runs file-server on `port`.
-<br><sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/api.clj#L519-L532)</sub>
+<br><sub>[source](https://github.com/ssjoleary/thoughts.bb/blob/main/src/thoughts/api.clj#L435-L450)</sub>
+
+## `thoughts`
+
+```clojure
+
+(thoughts opts)
+```
+
+Alias for `render`
+<br><sub>[source](https://github.com/ssjoleary/thoughts.bb/blob/main/src/thoughts/api.clj#L393-L396)</sub>
+
 ## `watch`
-``` clojure
+
+```clojure
 
 (watch opts)
 ```
 
-
 Watches posts, templates, and assets for changes. Runs file server using
-  `serve`.
-<br><sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/api.clj#L536-L601)</sub>
-# quickblog.cli 
+`serve`.
+<br><sub>[source](https://github.com/ssjoleary/thoughts.bb/blob/main/src/thoughts/api.clj#L454-L520)</sub>
 
-
-
-
+# thoughts.cli
 
 ## `-main`
-``` clojure
+
+```clojure
 
 (-main & args)
 ```
 
-<sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/cli.clj#L143-L144)</sub>
+<sub>[source](https://github.com/ssjoleary/thoughts.bb/blob/main/src/thoughts/cli.clj#L141-L142)</sub>
+
 ## `dispatch`
-``` clojure
+
+```clojure
 
 (dispatch)
 (dispatch default-opts & args)
 ```
 
-<sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/cli.clj#L127-L133)</sub>
+<sub>[source](https://github.com/ssjoleary/thoughts.bb/blob/main/src/thoughts/cli.clj#L125-L131)</sub>
+
 ## `run`
-``` clojure
+
+```clojure
 
 (run default-opts)
 ```
 
-
-Meant to be called using `clj -M:quickblog`; see Quickstart > Clojure in README
-<br><sub>[source](https://github.com/borkdude/quickblog/blob/main/src/quickblog/cli.clj#L135-L141)</sub>
+Meant to be called using `clj -M:thoughts`; see Quickstart > Clojure in README
+<br><sub>[source](https://github.com/ssjoleary/thoughts.bb/blob/main/src/thoughts/cli.clj#L133-L139)</sub>

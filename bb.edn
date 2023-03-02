@@ -7,21 +7,18 @@
  {:requires ([babashka.fs :as fs]
              [thoughts.cli :as cli])
   :init (do
-          (def opts {:blog-title "REPL adventures"
-                     :blog-description "A blog about blogging quickly"
+          (def opts {:blog-title "thoughts.bb"
+                     :blog-description "An attempt at a quieter, slower, more personal internet"
                      :about-link "https://github.com/ssjoleary/thoughts.bb"
-                     :twitter-handle "thoughts"})
+                     :twitter-handle "thoughts.bb"})
           (defn- run-command [cmd-name opts]
             (apply cli/dispatch opts cmd-name *command-line-args*)))
 
-  thoughts {:doc "Start blogging quickly! Run `bb thoughts help` for details."
+  thoughts {:doc "Run `bb thoughts help` for details."
             :task (cli/dispatch opts)}
 
-  new {:doc "Create new blog article"
+  new {:doc "Put a new thought to virtual paper"
        :task (run-command "new" opts)}
-
-  migrate {:doc "Migrate away from posts.edn to metadata in post files"
-           :task (run-command "migrate" opts)}
 
   refresh-templates
   {:doc "Update to latest templates. NOTE: this is a destructive operation, as it will overwrite any templates you have in your `:templates-dir`. You should ensure that your templates are backed up or under revision control before running this command!"
