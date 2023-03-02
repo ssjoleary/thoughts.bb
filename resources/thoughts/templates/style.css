@@ -1,48 +1,67 @@
-body {
-  /* borrowed from metaredux.com */
-  font: 400 16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-  margin: 0;
-  padding: 0;
-  color: rgb(51, 65, 85)
+.header-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
-h1, h2, h3 {
-  font-weight: 800;
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-a {
-  color: rgb(51, 65, 85)
+.post-body {
+  grid-area: body;
+  border: #e5e7eb solid 1px;
+  border-radius: 3px;
+  padding: 1em;
 }
 
-.wrapper {
-  max-width: 800px;
-  margin: 0 auto 0 auto;
-  padding: 0 15px;
-}
-
-h2 {
+.post-body > p {
   margin-bottom: 0;
-  margin-top: 0;
 }
 
-p {
-  margin-top: 0.2em;
+.post-date {
+  grid-area: date;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 
-.site-header {
-  border-top: 2px solid #424242;
-  border-bottom: 1px solid #e8e8e8;
-  min-height: 55.95px;
-  position: relative;
+.post-date > p {
+  margin-bottom: 0;
+  font-size: 12px;
 }
 
-.site-title {
-  margin: 0;
+.post-tags {
+  grid-area: tags;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.post-tags > a {
+  margin-left: 5px;
+  font-size: 12px;
+}
+
+.post-grid {
+  margin-bottom: 15px;
+
+  display: grid;
+
+  grid-template-columns: 3fr 0.5fr;
+  grid-template-rows: 0.5fr auto 0.5fr;
+
+  grid-template-areas:
+    "date date"
+    "body body"
+    "tags tags";
 }
 
 .site-nav {
-  float: right;
-  line-height: 4rem;
+  align-self: flex-end;
+  margin-bottom: 1rem;
 }
 
 .site-nav .page-link:not(:last-child) {
@@ -51,22 +70,36 @@ p {
 
 .page-link {
   text-decoration: none;
-  vertical-align: middle;
 }
 
-.page-icon {
-  vertical-align: middle;
-}
+:root {
+  --nc-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --nc-font-mono: Consolas, monaco, "Ubuntu Mono", "Liberation Mono",
+    "Courier New", Courier, monospace;
 
-ul.index {
-  list-style: none;
-  padding-left: 0;
-}
+  /* Light theme */
+  --nc-tx-1: rgb(51, 65, 85);
+  --nc-tx-2: #334155;
+  --nc-bg-1: #ffffff;
+  --nc-bg-2: #f6f8fa;
+  --nc-bg-3: #e5e7eb;
+  --nc-lk-1: #334155;
+  --nc-lk-2: #334155;
+  --nc-lk-tx: #ffffff;
+  --nc-ac-1: #79ffe1;
+  --nc-ac-tx: #0c4047;
 
-.index li {
-  margin-bottom: 1em;
-}
-
-code {
-  white-space: pre;
+  /* Dark theme */
+  --nc-d-tx-1: #acbdcd;
+  --nc-d-tx-2: #acbdcd;
+  --nc-d-bg-1: #000000;
+  --nc-d-bg-2: #111111;
+  --nc-d-bg-3: #222222;
+  --nc-d-lk-1: #acbdcd;
+  --nc-d-lk-2: #acbdcd;
+  --nc-d-lk-tx: #ffffff;
+  --nc-d-ac-1: #7928ca;
+  --nc-d-ac-tx: #ffffff;
 }
