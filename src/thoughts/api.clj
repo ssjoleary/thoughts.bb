@@ -12,21 +12,21 @@
      :blog-author
      {:desc "Author's name"
       :ref "<name>"
-      :default "Quick Blogger"
+      :default "Portable Pal"
       :require true
       :group :blog-metadata}
 
      :blog-description
      {:desc "Blog description for subtitle and RSS feeds"
       :ref "<text>"
-      :default "A blog about blogging quickly"
+      :default "An attempt at a quieter, slower, more personal internet"
       :require true
       :group :blog-metadata}
 
      :blog-root
      {:desc "Base URL of the blog"
       :ref "<url>"
-      :default "https://github.com/ssjoleary/thoughts"
+      :default "https://github.com/ssjoleary/thoughts.bb"
       :require true
       :group :blog-metadata}
 
@@ -49,7 +49,7 @@
      ;; Post config
      :default-metadata
      {:desc "Default metadata to add to posts"
-      :default {:tags ["daily"]}
+      :default {:tags ["daily-check-in"]}
       :group :post-config}
 
      ;; Input directories
@@ -139,15 +139,12 @@
      {:desc "Directory to write favicon assets to (relative to :out-dir)"
       :ref "<dir>"
       :default "assets/favicon"
-      :group :favicon}
+      :group :favicon}}}}
 
-     ;; Command-specific opts
-     }}}
   (:require
    [babashka.fs :as fs]
    [babashka.process :refer [shell]]
    [clojure.data.xml :as xml]
-   [clojure.edn :as edn]
    [clojure.set :as set]
    [clojure.string :as str]
    [thoughts.internal :as lib]
