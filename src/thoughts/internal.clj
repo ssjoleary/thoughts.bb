@@ -343,7 +343,6 @@
     (selmer/render template template-vars)))
 
 (defn write-post! [{:keys [twitter-handle
-                           discuss-link
                            out-dir
                            page-template
                            post-template]
@@ -351,7 +350,7 @@
                    {:keys [file html description image image-alt]
                     :as post-metadata}]
   (let [out-file (fs/file out-dir (html-file file))
-        post-metadata (merge {:discuss discuss-link} (assoc post-metadata :body @html))
+        post-metadata (assoc post-metadata :body @html)
         body (selmer/render post-template post-metadata)
         author (-> (:twitter-handle post-metadata) (or twitter-handle))
         image (when image (if (re-matches #"^https?://.+" image)

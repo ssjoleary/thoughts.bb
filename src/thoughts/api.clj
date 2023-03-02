@@ -36,11 +36,6 @@
       :ref "<url>"
       :group :optional-metadata}
 
-     :discuss-link
-     {:desc "Link to discussion forum for posts"
-      :ref "<url>"
-      :group :optional-metadata}
-
      :twitter-handle
      {:desc "Author's Twitter handle"
       :ref "<handle>"
