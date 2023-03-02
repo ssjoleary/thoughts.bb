@@ -320,11 +320,11 @@
 
 (defn post-links [title posts {:keys [relative-path] :as opts}]
   (let [post-links-template (ensure-template opts "post-links.html")
-        post-links (for [{:keys [file title date preview]} posts
-                         :when (not preview)]
-                     {:url (str relative-path (str/replace file ".md" ".html"))
-                      :title title
-                      :date date})]
+        post-links (for [{:keys [file html] :as post} posts
+                         :let [url (str relative-path (str/replace file ".md" ".html"))]]
+                     (assoc post
+                            :url url
+                            :body @html))]
     (selmer/render (slurp post-links-template) {:title title
                                                 :post-links post-links})))
 
