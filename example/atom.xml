@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>hello world!</title>
+  <link href="https://github.com/ssjoleary/thoughts.bb/atom.xml" rel="self"/>
+  <link href="https://github.com/ssjoleary/thoughts.bb"/>
+  <updated>2023-03-03T09:55:13+00:00</updated>
+  <id>https://github.com/ssjoleary/thoughts.bb</id>
+  <author>
+    <name>Portable Pal</name>
+  </author>
+  <entry>
+    <id>https://github.com/ssjoleary/thoughts.bb/2023-03-02T11:26:51.html</id>
+    <link href="https://github.com/ssjoleary/thoughts.bb/2023-03-02T11:26:51.html"/>
+    <title>2023-03-02T11:26:51</title>
+    <updated>2023-03-02T23:59:59+00:00</updated>
+    <content type="html">
+      <![CDATA[<p>Let's try out some different markup.</p><h3>Some code</h3><pre><code class="lang-clojure">{:deps {io.github.ssjoleary/thoughts.bb
+        #&#95;&quot;You use the newest SHA here:&quot;
+        {:git/sha &quot;389833f393e04d4176ef3eaa5047fa307a5ff2e8&quot;}}
+ :tasks
+ {:init &#40;def opts {:blog-title &quot;thoughts&quot;
+                   :blog-description &quot;An attempt at a quieter, slower, more personal internet&quot;}&#41;
+  thoughts {:doc &quot;Run `bb thoughts help` for details.&quot;
+            :requires &#40;&#91;thoughts.cli :as cli&#93;&#41;
+            :task &#40;cli/dispatch opts&#41;}}}
+</code></pre><p><i>So far so good</i><h2></h2></p><blockquote><p> We know a lot of things, but what we don't know is a lot more. //Edward Witten </p></blockquote>]]>
+    </content>
+  </entry>
+  <entry>
+    <id>https://github.com/ssjoleary/thoughts.bb/2023-03-02T10:37:18.html</id>
+    <link href="https://github.com/ssjoleary/thoughts.bb/2023-03-02T10:37:18.html"/>
+    <title>2023-03-02T10:37:18</title>
+    <updated>2023-03-02T23:59:59+00:00</updated>
+    <content type="html">
+      <![CDATA[<p>Another one!</p>]]>
+    </content>
+  </entry>
+  <entry>
+    <id>https://github.com/ssjoleary/thoughts.bb/2023-03-01T13:04:54.html</id>
+    <link href="https://github.com/ssjoleary/thoughts.bb/2023-03-01T13:04:54.html"/>
+    <title>2023-03-01T13:04:54</title>
+    <updated>2023-03-01T23:59:59+00:00</updated>
+    <content type="html">
+      <![CDATA[<p>My first thought...</p>]]>
+    </content>
+  </entry>
+</feed>
