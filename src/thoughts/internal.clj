@@ -143,7 +143,8 @@
         post-process-markdown)))
 
 (defn sort-posts [posts]
-  (sort-by :date (comp - compare) posts))
+  ;; TODO think harder about using DateTime stamp for title
+  (reverse (sort-by :title posts)))
 
 (defn modified-since? [target src]
   (seq (fs/modified-since target src)))
