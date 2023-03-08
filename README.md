@@ -18,7 +18,7 @@ See an example [HERE](https://ssjoleary.com/thoughts.bb/example)
 
 ## Who's using thoughts.bb
 
-- [ssjoleary](https://tilde.club/~automaticpancake/thoughts)
+- [~automaticpancake](https://tilde.club/~automaticpancake)
 
 Feel free to PR yours.
 
